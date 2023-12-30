@@ -6,5 +6,6 @@ remappings = [
     "@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/",
     "contracts/=src/contracts/",
     "priceConverter/=src/lib/priceConverter/",
-    "script/=script/"
+    "script/=script/",
+    "mocks/=src/contracts/mocks/"
 ]

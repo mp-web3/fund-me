@@ -6,11 +6,12 @@
 pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
+import {MockV3Aggregator} from "mocks/MockV3Aggregator.sol";
 
+// We updated HelperConfig contract to "is Script" in order to use vm.startbroadcast()
+// in getAnvilEthConfig and deploy a price feed mock contract
+contract HelperConfig is Script{
 
-contract HelperConfig {
-    // If we are on a local anvil chain, we depoly mocks
-    // Otherwise, we grab the existing address from the live network
     NetworkConfig public activeNetworkConfig;
 
     struct NetworkConfig {
@@ -47,7 +48,29 @@ contract HelperConfig {
         });
         return ethereumConfig;
     }
-    function getAnvilEthConfig() public pure returns (NetworkConfig memory) {
+
+    /// On Anvil local network the price feed address does not exist. So we'll have to deploy 
+    /// our mocked contracts
+
+    function getAnvilEthConfig() public returns (NetworkConfig memory) {
         // price feed address
+
+        // 1. Deploy mockPriceFeed using MockV3Aggregator
+        // 2. Return the mock address
+
+        vm.startBroadcast();
+
+        //// takes 2 arguments, _decimals and _initialAnswer
+        /// _decimals: A uint8 value representing the number of decimals the mock price feed values will have. 
+        // This sets the scale or precision of the data returned by the aggregator.
+        /// _initialAnswer: An int256 value representing the initial price or value that the mock aggregator will return. 
+        // This is the starting value for the mock data, simulating the initial price feed data from an oracle.
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(8, 2000e8);
+
+        vm.stopBroadcast();
+
+        NetworkConfig memory anvilConfig = NetworkConfig({priceFeed: address(mockPriceFeed)});
+
+        return anvilConfig;
     }
 }
