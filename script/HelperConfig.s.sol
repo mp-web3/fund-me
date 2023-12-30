@@ -14,6 +14,9 @@ contract HelperConfig is Script{
 
     NetworkConfig public activeNetworkConfig;
 
+    uint8 public constant DECIMALS = 8;
+    int256 public constant INITIAL_PRICE = 2000e8;
+
     struct NetworkConfig {
         address priceFeed; // ETH/USD price feed address
     }
@@ -29,7 +32,7 @@ contract HelperConfig is Script{
 
         } else {
 
-            activeNetworkConfig = getAnvilEthConfig();
+            activeNetworkConfig = getOrCreateAnvilEthConfig();
         }
     }
 
@@ -52,8 +55,11 @@ contract HelperConfig is Script{
     /// On Anvil local network the price feed address does not exist. So we'll have to deploy 
     /// our mocked contracts
 
-    function getAnvilEthConfig() public returns (NetworkConfig memory) {
-        // price feed address
+    function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
+        // If we have already deployed a mockPriceFeed we don't want to deploy a new one
+        if(activeNetworkConfig.priceFeed != address(0)) {
+            return activeNetworkConfig;
+        }
 
         // 1. Deploy mockPriceFeed using MockV3Aggregator
         // 2. Return the mock address
@@ -65,7 +71,7 @@ contract HelperConfig is Script{
         // This sets the scale or precision of the data returned by the aggregator.
         /// _initialAnswer: An int256 value representing the initial price or value that the mock aggregator will return. 
         // This is the starting value for the mock data, simulating the initial price feed data from an oracle.
-        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(8, 2000e8);
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
 
         vm.stopBroadcast();
 
