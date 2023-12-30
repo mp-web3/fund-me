@@ -19,7 +19,7 @@ contract FundMeTest is Test {
     }
 
     function testMinimumDollarIsFive() public { 
-        assertEq(fundMe.MINIMUM_USD(), 5e18);
+        assertEq(fundMe.MINIMUM_USD(), 5e18); 
         console.logUint(fundMe.MINIMUM_USD());
     }
 
@@ -31,6 +31,18 @@ contract FundMeTest is Test {
         uint256 expectedVersion = 4;
         uint256 actualVersion = fundMe.getVersion();
         assertEq(actualVersion, expectedVersion);
+    }
+
+    // It should revert if funds sent are less than MINIMUM_USD
+    function testFundFailsIfNotEnoughEth() public {
+        vm.expectRevert();
+
+        fundMe.fund();
+    }
+
+    function testFundUpdatesFundedDataStructure() public {
+        fundMe.fund{value: 10e18}();
+        // https://www.youtube.com/watch?v=pDb8XDYM8w0&list=PL2-Nvp2Kn0FPH2xU3IbKrrkae-VVXs1vk&index=93
     }
 
 }
