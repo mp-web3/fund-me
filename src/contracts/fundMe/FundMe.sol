@@ -42,11 +42,8 @@ contract FundMe {
         _;
     }
 
-    /// Gas Optimization
-    //Function to optimize gas for reading to storage
-
-    function evenCheaperWithdraw() public onlyOwner {
-        address[] memory funders = s_funders;
+    function withdraw() public onlyOwner {
+        address[] memory funders = s_funders; //Gas optimization by saving the address[] funders in storage to memory and then reading from there
         uint256 fundersLength = funders.length;
 
         for (uint256 fundersIndex = 0; fundersIndex < fundersLength; fundersIndex++) {
@@ -54,30 +51,6 @@ contract FundMe {
             s_addressToAmountFunded[funder] = 0;
         }
 
-        s_funders = new address[](0);
-        (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
-        require(callSuccess, "Call failed");
-    }
-
-
-    function cheaperWithdraw() public onlyOwner {
-        /// 1. Read from storage s_funders.length only once. Assign it to a variable and then use it to loop
-        uint256 fundersLength = s_funders.length;
-
-        for (uint256 fundersIndex = 0; fundersIndex < fundersLength; fundersIndex++) {
-            address funder = s_funders[fundersIndex]; // Here we can't optimize, we have to read from storage (Or maybe would be possible here to create a local variable?)
-            s_addressToAmountFunded[funder] = 0; // Here also we have to write to storage
-        }
-        s_funders = new address[](0);
-        (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
-        require(callSuccess, "Call failed");
-    }
-    
-    function withdraw() public onlyOwner {
-        for (uint256 funderIndex=0; funderIndex < s_funders.length; funderIndex++){
-            address funder = s_funders[funderIndex];
-            s_addressToAmountFunded[funder] = 0;
-        }
         s_funders = new address[](0);
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
