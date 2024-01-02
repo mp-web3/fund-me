@@ -120,16 +120,9 @@ contract FundMeTest is Test {
 
     }
     function testCheaperWithdrawFromMultipleFunders() public {
-        //As of Solidity v0.8, you can no longer cast explicitly from address to uint256.
-        // You can now use: uint256 i = uint256(uint160(msg.sender)); https://stackoverflow.com/questions/43318077/solidity-type-address-not-convertible-to-type-uint256
-        // IMPORTANT: Any time we want to use numbers to generate addresses the numbers must be of type uint160;
         uint160 numberOfFunders = 10;
-        // We set the starting index to 1 instead of 0 because 0 address often reverts due to sanity checks
         uint160 startingFunderIndex = 1;
         
-
-        // We are going to use hoax (https://book.getfoundry.sh/reference/forge-std/hoax) cheatcode from Forge Standard Library to set up multiple addresses with ether
-        // instead of using vm.prank and vm.deal
         for(uint160 i = startingFunderIndex; i <= numberOfFunders; i++) {
             hoax(address(i), STARTING_BALANCE);
             fundMe.fund{value: SEND_VALUE}();
@@ -147,16 +140,9 @@ contract FundMeTest is Test {
 
     }
     function testEvenCheaperWithdrawFromMultipleFunders() public {
-        //As of Solidity v0.8, you can no longer cast explicitly from address to uint256.
-        // You can now use: uint256 i = uint256(uint160(msg.sender)); https://stackoverflow.com/questions/43318077/solidity-type-address-not-convertible-to-type-uint256
-        // IMPORTANT: Any time we want to use numbers to generate addresses the numbers must be of type uint160;
         uint160 numberOfFunders = 10;
-        // We set the starting index to 1 instead of 0 because 0 address often reverts due to sanity checks
         uint160 startingFunderIndex = 1;
         
-
-        // We are going to use hoax (https://book.getfoundry.sh/reference/forge-std/hoax) cheatcode from Forge Standard Library to set up multiple addresses with ether
-        // instead of using vm.prank and vm.deal
         for(uint160 i = startingFunderIndex; i <= numberOfFunders; i++) {
             hoax(address(i), STARTING_BALANCE);
             fundMe.fund{value: SEND_VALUE}();

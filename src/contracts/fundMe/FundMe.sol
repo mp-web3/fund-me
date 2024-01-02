@@ -20,7 +20,6 @@ contract FundMe {
     AggregatorV3Interface private s_priceFeed;
     
     // we pass in here an argument which stands for the AggregatorV3Interface address depending on the blockchain
-    // we want to deploy to
     constructor(address priceFeedAddress) {
         i_owner = msg.sender;
         s_priceFeed = AggregatorV3Interface(priceFeedAddress);
@@ -46,6 +45,8 @@ contract FundMe {
     //Function to optimize gas for reading to storage
 
     function evenCheaperWithdraw() public onlyOwner {
+            /// 1. Optimizing even more by saving to memory the address array to memory
+
         address[] memory funders = s_funders;
         uint256 fundersLength = funders.length;
 
